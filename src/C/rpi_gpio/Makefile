@@ -1,6 +1,6 @@
 clean:
 	$(info Removing old binary...)
-	rm cfd
+	rm hinp
 
-cfd: cfd_rpi.c cfd_rpi.h
-	gcc -g -c -Wall -o cfd.o cfd_rpi.c
+hinp: hinp_rpi.c hinp_rpi.h
+	gcc -g -c -Wall -o hinp.o hinp_rpi.c
