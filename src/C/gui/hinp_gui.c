@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gprintf.h>
-#include <hinp_rpi.h>
+#include "hinp_rpi.h"
 #include <sched.h>
 #include <stdlib.h>
 
@@ -874,10 +874,10 @@ int main(int argc, char *argv[])
 	/* Set GPIO to default states */
 	rpi_setup_io();
 	rpi_configure();
-    
-    printf("Initializing ADCs for next conversion\n");
-    init_adcs();
-    
+    	
+	printf("Initializing ADCs for next conversion\n");
+    	init_adcs();
+
 	set_write();
 	int addr_dat = 0xaa;
 	set_data(addr_dat);

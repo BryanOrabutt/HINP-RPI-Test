@@ -342,7 +342,7 @@ struct adc_readings read_adcs(void)
     return readings;
 }
 
-void init_adc(void)
+void init_adcs(void)
 {
     set_conv(1);
     delay_ns(CONV_TIME_NS);
