@@ -17,7 +17,7 @@ PTHREAD=-pthread
      -I/usr/include/pango-1.0/ -I/usr/include/cairo/ \
 	-I/usr/include/gdk-pixbuf-2.0/ -I/usr/include/atk-1.0/ \
 	-I../rpi_gpio/
-CCFLAGS=$(DEBUG) $(OPT) $(WARN) $(PTHREAD) `pkg-config --cflags gtk+-3.0` -pipe -I../rpi_gpio/
+CCFLAGS=$(DEBUG) $(OPT) $(WARN) $(PTHREAD) -pipe `pkg-config --cflags gtk+-3.0` -I../rpi_gpio/ 
 
 #GTKLIB=`pkg-config --cflags --libs gtk+-3.0`
 GTKLIB=`pkg-config --cflags --libs gtk+-3.0`

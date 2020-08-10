@@ -367,3 +367,8 @@ char read_channel_number(void)
     
     return channel;
 }
+
+char read_or_out_pin(void)
+{
+    return GET_GPIO(OR_OUT) ? 1:0;
+}
