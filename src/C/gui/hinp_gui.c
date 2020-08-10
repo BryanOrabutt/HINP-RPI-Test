@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gprintf.h>
-#include <cfd_rpi.h>
+#include <hinp_rpi.h>
 #include <sched.h>
 #include <stdlib.h>
 
