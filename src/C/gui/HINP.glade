@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.1 -->
+<!-- Generated with glade 3.36.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkImage" id="image1">
@@ -23,9 +23,6 @@
     <property name="resizable">False</property>
     <property name="window_position">center</property>
     <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
-    <child>
-      <placeholder/>
-    </child>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -225,7 +222,7 @@
                 <property name="label" translatable="yes">Digital Auto Reset (ns)</property>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">10</property>
                 <property name="position">2</property>
@@ -235,7 +232,7 @@
               <object class="GtkComboBoxText" id="AR_Digital_Menu">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="active">1</property>
+                <property name="active">0</property>
                 <items>
                   <item translatable="yes">100</item>
                   <item translatable="yes">1000</item>
@@ -389,7 +386,7 @@
                 <signal name="changed" handler="on_TVC_Buff_Menu_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
@@ -402,7 +399,7 @@
                 <property name="label" translatable="yes">AGND Trim</property>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="padding">10</property>
                 <property name="position">2</property>
@@ -488,7 +485,7 @@
               </packing>
             </child>
             <child>
-              <object class="GtkComboBoxText" id="HG_Buffer_Menu">
+              <object class="GtkComboBoxText" id="HG_Buff_Menu">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="active">0</property>
@@ -537,27 +534,15 @@
                 <property name="active">1</property>
                 <property name="popup_fixed_width">False</property>
                 <items>
-                  <item translatable="yes">250 ns</item>
+                  <item translatable="yes">500 ns</item>
                   <item translatable="yes">2 us</item>
                 </items>
                 <signal name="changed" handler="on_TVC_Mode_Menu_changed" swapped="no"/>
               </object>
               <packing>
-                <property name="expand">True</property>
+                <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel" id="or_label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes">OR out not received</property>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -659,6 +644,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -667,9 +653,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -769,6 +756,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -777,9 +765,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -881,6 +870,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -889,9 +879,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -991,6 +982,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -999,9 +991,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1101,6 +1094,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1109,9 +1103,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1211,6 +1206,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1219,9 +1215,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1321,6 +1318,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1329,9 +1327,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1431,6 +1430,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1439,9 +1439,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1541,6 +1542,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1548,9 +1550,10 @@
                   <object class="GtkEntry" id="Channel8_ADC_Box">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1650,6 +1653,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1658,9 +1662,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1759,6 +1764,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1767,9 +1773,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1868,6 +1875,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1876,9 +1884,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -1977,6 +1986,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -1985,9 +1995,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -2086,6 +2097,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -2093,9 +2105,10 @@
                   <object class="GtkEntry" id="Channel13_ADC_Box">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -2194,6 +2207,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -2202,9 +2216,10 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -2303,6 +2318,7 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
+                    <property name="padding">5</property>
                     <property name="position">5</property>
                   </packing>
                 </child>
@@ -2310,9 +2326,10 @@
                   <object class="GtkEntry" id="Channel15_ADC_Box">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="width_chars">28</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">6</property>
                   </packing>
@@ -2453,6 +2470,9 @@
           </packing>
         </child>
       </object>
+    </child>
+    <child type="titlebar">
+      <placeholder/>
     </child>
   </object>
 </interface>

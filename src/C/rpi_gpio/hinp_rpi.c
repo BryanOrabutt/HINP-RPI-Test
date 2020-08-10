@@ -30,6 +30,12 @@ const unsigned char COMMON_STOP = 19; //Stop all TVCs.
 const unsigned char TAKE_EVENT = 6; //Start readout.
 const unsigned char OR_OUT = 17; //Logical OR of all channel hit registers.
 
+int  mem_fd;
+void *gpio_map;
+
+//I/O access pointer
+volatile unsigned *gpio;
+
 
 int iter; //iterator for loops
 
@@ -362,7 +368,7 @@ char read_channel_number(void)
     char channel = 0;
     for(iter = 0; iter < ADDR_BITS; iter++)
     {
-        channel |= GET_GPIO(ADDR[iter]) ? (1 << iter):0;
+        channel |= GET_GPIO(MODE[iter]) ? (1 << iter):0;
     }
     
     return channel;

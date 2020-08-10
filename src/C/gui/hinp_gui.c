@@ -1,9 +1,10 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 #include <glib/gprintf.h>
-#include "hinp_rpi.h"
 #include <sched.h>
 #include <stdlib.h>
+#include <pthread.h>
+#include "hinp_rpi.h"
 
 /* Setup GTK Object handles for each widget */
 
@@ -122,6 +123,10 @@ char int_agnd_en;
 char agnd_trim;
 char nowlin_mode;
 char nowlin_delay;
+char autopeak;
+char odd_pulser;
+char even_pulser;
+char sel_shaper;
 char ar_digital;
 char auto_reset;
 char tvc_buffer;
@@ -131,6 +136,8 @@ char tvc_mode;
 unsigned int lockout_dac;
 char ch_en[CHANNELS]; //individual channel enable flags
 char ch_sign[CHANNELS]; //individual channel DAC sign bit flags
+
+pthread_t or_thread;
 
 
 
@@ -145,6 +152,16 @@ void* read_or_out(void* arg)
     {
         if(read_or_out_pin())
         {
+            if(tvc_mode == TVC_500NS)
+            {
+                delay_ns(400);
+            }
+            else
+            {
+                delay_ns(1850);
+            }
+            
+            set_common_stop(1);
             set_gen(0);
             set_write();
             delay_ns(100);
@@ -171,6 +188,7 @@ void* read_or_out(void* arg)
                 force_reset_low();                
             }
             prev_state = 1;
+            set_common_stop(0);
         }
         else
         {
@@ -403,6 +421,42 @@ void on_Neg_Pol_CB_toggled()
 	printf("Neg pol toggled: %s\n", (neg_pol) ? "ON":"OFF");
 }
 
+/* When Autopeak is toggled, update autopeak variable and print a message */
+void on_Autopeak_CB_toggled()
+{
+	GtkToggleButton* autopeak_cb = GTK_TOGGLE_BUTTON(Autopeak_CB_h);
+
+	autopeak = (gtk_toggle_button_get_active(autopeak_cb)) ? 1:0;
+	printf("Autopeak toggled: %s\n", (autopeak) ? "ON":"OFF");
+}
+
+/* When Sel shaper is toggled, update sel_shaper variable and print a message */
+void on_Sel_Shaper_CB_toggled()
+{
+	GtkToggleButton* sel_shaper_cb = GTK_TOGGLE_BUTTON(Sel_Shaper_CB_h);
+
+	sel_shaper = (gtk_toggle_button_get_active(sel_shaper_cb)) ? 1:0;
+	printf("Sel shaper toggled: %s\n", (sel_shaper) ? "ON":"OFF");
+}
+
+/* When Odd pulser is toggled, update odd_pulser variable and print a message */
+void on_Odd_Pulser_CB_toggled()
+{
+	GtkToggleButton* odd_pulser_cb = GTK_TOGGLE_BUTTON(Odd_Pulser_CB_h);
+
+	odd_pulser = (gtk_toggle_button_get_active(odd_pulser_cb)) ? 1:0;
+	printf("Odd pulser toggled: %s\n", (odd_pulser) ? "ON":"OFF");
+}
+
+/* When Even pulser is toggled, update even_pulser variable and print a message */
+void on_Even_Pulser_CB_toggled()
+{
+	GtkToggleButton* even_pulser_cb = GTK_TOGGLE_BUTTON(Even_Pulser_CB_h);
+
+	even_pulser = (gtk_toggle_button_get_active(even_pulser_cb)) ? 1:0;
+	printf("Neg pol toggled: %s\n", (even_pulser) ? "ON":"OFF");
+}
+
 /* When Int_AGND is toggled, update int_agnd_en variable and print a message */
 void on_Internal_AGND_CB_toggled()
 {
@@ -459,6 +513,95 @@ void on_Nowlin_Delay_Menu_changed()
 	g_printf("Nowlin delay menu changed: %s ns\tIndex: %d\n", delay, nowlin_delay);
 }
 
+/* When AR Digital changes, save delay menu index into ar_digital
+ * variable and print a message
+*/
+void on_AR_Digital_Menu_changed()
+{
+	GtkComboBoxText* ardigital_box = GTK_COMBO_BOX_TEXT(AR_Digital_Menu_h);
+	
+	gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(ardigital_box));
+	gchar* val = gtk_combo_box_text_get_active_text(ardigital_box);
+
+	ar_digital = (char)index;
+
+	g_printf("Digital autoreset menu changed: %s ns\tIndex: %d\n", val, ar_digital);
+}
+
+/* When Auto reset changes, save delay menu index into auto_reset
+ * variable and print a message
+*/
+void on_Auto_Reset_Menu_changed()
+{
+	GtkComboBoxText* auto_reset_box = GTK_COMBO_BOX_TEXT(Auto_Reset_Menu_h);
+	
+	gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(auto_reset_box));
+	gchar* val = gtk_combo_box_text_get_active_text(auto_reset_box);
+
+	auto_reset = (char)index;
+
+	g_printf("Analog autoreset menu changed: %s ns\tIndex: %d\n", val, auto_reset);
+}
+
+/* When TVC buffer changes, save delay menu index into tvc_buff
+ * variable and print a message
+*/
+void on_TVC_Buff_Menu_changed()
+{
+	GtkComboBoxText* buff_box = GTK_COMBO_BOX_TEXT(TVC_Buff_Menu_h);
+	
+	gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(buff_box));
+	gchar* val = gtk_combo_box_text_get_active_text(buff_box);
+
+	tvc_buffer = (char)index;
+
+	g_printf("TVC buffer menu changed: %s ns\tIndex: %d\n", val, tvc_buffer);
+}
+
+/* When HG buffer changes, save delay menu index into hg_buffer
+ * variable and print a message
+*/
+void on_HG_Buff_Menu_changed()
+{
+	GtkComboBoxText* buff_box = GTK_COMBO_BOX_TEXT(HG_Buff_Menu_h);
+	
+	gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(buff_box));
+	gchar* val = gtk_combo_box_text_get_active_text(buff_box);
+
+	hg_buffer = (char)index;
+
+	g_printf("HG buffer menu changed: %s ns\tIndex: %d\n", val, hg_buffer);
+}
+
+/* When LG Buffer changes, save delay menu index into lg_buffer
+ * variable and print a message
+*/
+void on_LG_Buff_Menu_changed()
+{
+	GtkComboBoxText* buff_box = GTK_COMBO_BOX_TEXT(LG_Buff_Menu_h);
+	
+	gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(buff_box));
+	gchar* val = gtk_combo_box_text_get_active_text(buff_box);
+
+	lg_buffer = (char)index;
+
+	g_printf("LG buffer menu changed: %s ns\tIndex: %d\n", val, lg_buffer);
+}
+
+/* When TVC mode changes, save menu index into tvc_mode
+ * variable and print a message
+*/
+void on_TVC_Mode_Menu_changed()
+{
+	GtkComboBoxText* mode_box = GTK_COMBO_BOX_TEXT(TVC_Mode_Menu_h);
+	
+	gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(mode_box));
+	gchar* val = gtk_combo_box_text_get_active_text(mode_box);
+
+	tvc_mode = (char)index;
+
+	g_printf("TVC mode menu changed: %s ns\tIndex: %d\n", val, tvc_mode);
+}
 /* When AGND_Trim menu changes, save index into agnd_trim variable and
  * print a message.
 */
@@ -667,11 +810,103 @@ void on_Channel15_Sign_CB_toggled()
 */
 void on_Configure_Button_clicked()
 {
+    char data = 0;
+    
+    set_gen(1);
+	set_internal_agnd(int_agnd_en);
+    
+    //configure data registers
+    //register0
+    strobe_low();
+    delay_ns(500);
+    set_data(0);
+    strobe_high();
+    
+    data |= even_pulser;
+    data |= odd_pulser << 1;
+    data |= nowlin_delay << 2;
+    data |= nowlin_mode << 6;
+    data |= ((hg_buffer == BUFF_50) || (hg_buffer == BUFF_NEG_50)) ? 0:(1 << 7);
+    
+    set_data(data);
+    delay_ns(500);
+    strobe_low();
+    delay_ns(500);
+    
+    //register 1
+    set_data(1);
+    delay_ns(500);
+    strobe_high();
+    delay_ns(500);
+    
+    data = 0;
+    data |= ((hg_buffer == BUFF_NEG_50) || (hg_buffer == BUFF_NEG_25)) ? 1:0;
+    data |= ((lg_buffer == BUFF_50) || (lg_buffer == BUFF_NEG_50)) ? 0:(1 << 1);
+    data |= ((lg_buffer == BUFF_NEG_50) || (lg_buffer == BUFF_NEG_25)) ? 1:0;
+    data |= autopeak << 3;
+    data |= sel_shaper << 4;
+    data |= agnd_trim << 5;
+    
+    delay_ns(500);
+    strobe_low();
+    delay_ns(500);
+    
+    //register 2
+    set_data(2);
+    delay_ns(500);
+    strobe_high();
+    delay_ns(500);
+    
+    data = 0;
+    data |= tvc_mode;
+    data |= (neg_pol == COLLECT_HOLES) ? (1 << 2):0;
+    data |= auto_reset << 3;
+    data |= ar_digital << 7;
+    
+    delay_ns(500);
+    set_data(data);
+    delay_ns(500);
+    strobe_low();
 
-	//set_read();
+    int iter = 0;
+	grab_dacs(); //get dac box data
+
+    do
+	{
+		//Configure channel registers.	
+		//set mode 6
+		data = (gmode << 3);
+		data |= 6;
+		data |= (iter << 4);
+		printf("addr_mode = 0x%02X\n", data);
+		set_data(data);
+		delay_ns(500);
 	
-	//gmode on = 5 strobes, off = 19 strobes
+		strobe_high();
+		delay_ns(500);
 
+		//set data for channel
+		data = 0;
+
+		leading_edge_dac[iter] &= 0x1f; //clear top 3 MSBs since they should not be used.
+
+		data = leading_edge_dac[iter];
+		data |= (ch_sign[iter] << 5);
+		data |= (ch_en[iter] << 6);
+		set_data(data);
+		printf("data = 0x%02X\n", data);
+		delay_ns(500);
+
+		strobe_low();
+		delay_ns(500);		
+		iter++;	
+		
+		printf("iter = %d\n", iter);
+	
+		if(iter > 15) break;
+	
+	} while(!gmode);
+    
 	g_printf("Configuration done!\n");
 	
 }
@@ -722,7 +957,7 @@ int main(int argc, char *argv[])
 
 	/* Create a builder object to read the XML file */
 	builder = gtk_builder_new();
-	gtk_builder_add_from_file (builder, "CFD.glade", NULL);
+	gtk_builder_add_from_file (builder, "HINP.glade", NULL);
 
 	
 	/* Using builder object, create an object handle for each GUI element */
@@ -840,10 +1075,16 @@ int main(int argc, char *argv[])
 	nowlin_delay = 1; //set Nowlin delay for 2 ns (switch in 1 cap at short mode)
     ar_digital = AR_DIGITAL_100;
     auto_reset = 0;
-    tvc_buffer = BUFF_25;
-    hg_buffer = BUFF_25;
-    lg_buffer = BUFF_25;
+    tvc_buffer = BUFF_50;
+    hg_buffer = BUFF_50;
+    lg_buffer = BUFF_50;
     tvc_mode = TVC_2US;
+    autopeak = 1;
+    odd_pulser = 0;
+    even_pulser = 0;
+    sel_shaper = 0;
+    ar_digital = 1;
+    auto_reset = 15;
 
 	for(int i = 0; i < CHANNELS; i++)
 	{
@@ -881,9 +1122,12 @@ int main(int argc, char *argv[])
 	set_write();
 	int addr_dat = 0xaa;
 	set_data(addr_dat);
-	
+
+    pthread_create(&or_thread, NULL, read_or_out, NULL);
 
 	gtk_main();
+    
+    pthread_join(or_thread, NULL);
 
 	return 0;
 }

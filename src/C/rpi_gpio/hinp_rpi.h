@@ -14,13 +14,6 @@
 #define PAGE_SIZE (4*1024)
 #define BLOCK_SIZE (4*1024)
 
-int  mem_fd;
-void *gpio_map;
-
-//I/O access pointer
-volatile unsigned *gpio;
-
-
 //GPIO setup macros. Always use INP_GPIO(x) before using OUT_GPIO(x) or SET_GPIO_ALT(x,y)
 #define INP_GPIO(g) *(gpio+((g)/10)) &= ~(7<<(((g)%10)*3))
 #define OUT_GPIO(g) *(gpio+((g)/10)) |=  (1<<(((g)%10)*3))
@@ -100,7 +93,7 @@ volatile unsigned *gpio;
 
 /* TVC Modes */
 #define TVC_2US     1
-#define TVC_250NS   0
+#define TVC_500NS   0
 
 /* Nowlin Modes */
 #define NOWLIN_SHORT	0
@@ -111,6 +104,10 @@ volatile unsigned *gpio;
 
 #define ENABLE	0
 #define DISABLE	1
+
+#define EVEN_PULSER 1
+#define ODD_PULSER  2
+#define NO_PULSER   0
 
 struct adc_readings
 {
