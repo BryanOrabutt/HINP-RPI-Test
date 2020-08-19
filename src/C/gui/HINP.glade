@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.36.0 -->
+<!-- Generated with glade 3.20.0 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
   <object class="GtkImage" id="image1">
@@ -19,7 +19,6 @@
   </object>
   <object class="GtkWindow" id="window_main">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">CFD Configuration Utility</property>
     <property name="resizable">False</property>
     <property name="window_position">center</property>
     <signal name="destroy" handler="on_window_main_destroy" swapped="no"/>
@@ -653,7 +652,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -765,7 +766,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -879,7 +882,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -991,7 +996,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1103,7 +1110,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1215,7 +1224,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1327,7 +1338,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1439,7 +1452,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1550,7 +1565,9 @@
                   <object class="GtkEntry" id="Channel8_ADC_Box">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1662,7 +1679,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1773,7 +1792,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1884,7 +1905,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -1995,7 +2018,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -2105,7 +2130,9 @@
                   <object class="GtkEntry" id="Channel13_ADC_Box">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -2216,7 +2243,9 @@
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="editable">False</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>
@@ -2326,7 +2355,9 @@
                   <object class="GtkEntry" id="Channel15_ADC_Box">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="width_chars">28</property>
+                    <property name="max_length">65</property>
+                    <property name="width_chars">45</property>
+                    <property name="max_width_chars">65</property>
                   </object>
                   <packing>
                     <property name="expand">True</property>

@@ -9,15 +9,14 @@
 #include <sched.h>
 
 //Pin accessors -- Use the Broadcom GPIO number *not* the phyiscal pin header number
-//const unsigned char DATA[8] = {5,6,13,19,26,16,20,21}; //data bus -- used to load
 const unsigned char DATA[8] = {7,8,25,24,23,18,15,14}; //data bus -- used to load configuration registers
 const unsigned char MODE[4] = {7,8,25,24}; //address bus -- just an alias of the upper nibble of the data bus
 const unsigned char ADDR[4] = {23,18,15,14}; //mode bus -- just an alias of the lower nibble of the data bus
 //const unsigned char NEG_POL = 7; //negative polarity enable -- POS,NEG = 0,1
 const unsigned char WRITE = 12; //bidirectional bus control -- IN,OUT = 1,0
 const unsigned char STB = 2; //data/address strobe -- addr/mode latched on rising edge, data latched on falling edge
-const unsigned char GEN = 20; //global enable -- OUTPUT,NO_OUTPUT = 1,0
-const unsigned char EXT_AGND = 26; //external AGND enable -- INTERNAL,EXTERNAL = 0,1
+const unsigned char GEN = 26; //global enable -- OUTPUT,NO_OUTPUT = 1,0
+const unsigned char EXT_AGND = 20; //external AGND enable -- INTERNAL,EXTERNAL = 0,1
 const unsigned char RST_L = 16; //low active reset -- ensures one-shot works properly.
 const unsigned char ADC_CONV = 3; //ADC convert signal
 const unsigned char LOW_GAIN_SDO = 27; //Low gain ADC data 
@@ -103,20 +102,22 @@ void strobe_low()
 
 void set_internal_agnd(char val)
 {
-	if(val == ENABLE)
+		val = 1;
+		//GPIO_CLR = 1 << EXT_AGND;
+	/*if(val == ENABLE)
 	{
 		GPIO_CLR = 1 << EXT_AGND;
 	}
 	else
 	{
 		GPIO_SET = 1 << EXT_AGND;
-	}
+	}*/
 }
 
-void pulse_rst_l()
+void pulse_rst_l(int val)
 {
 	GPIO_CLR = 1 << RST_L;
-	delay_ns(5000);
+	delay_ns(val);
 	GPIO_SET = 1 << RST_L;
 }
 
@@ -193,20 +194,18 @@ void rpi_configure()
 	INP_GPIO(STB);
     OUT_GPIO(STB);
 	GPIO_CLR = 1 << STB;
-	delay_ns(1000);
-	GPIO_SET = 1 << STB;
+    
     
     INP_GPIO(GEN);
     OUT_GPIO(GEN);
 	GPIO_CLR = 1 << GEN;
-	delay_ns(1000);
-	GPIO_SET = 1 << GEN;
+    
     
     INP_GPIO(EXT_AGND);
     OUT_GPIO(EXT_AGND);
 	GPIO_CLR = 1 << EXT_AGND;
-	delay_ns(1000);
-	GPIO_SET = 1 << EXT_AGND;
+	//delay_ns(1000);
+	//GPIO_SET = 1 << EXT_AGND;
     
     INP_GPIO(RST_L);
     OUT_GPIO(RST_L);
@@ -232,7 +231,7 @@ void rpi_configure()
     
     INP_GPIO(FORCE_RESET);
     OUT_GPIO(FORCE_RESET);
-    GPIO_CLR = 1 << ACQ_ALL;
+    GPIO_CLR = 1 << FORCE_RESET;
     
     INP_GPIO(COMMON_STOP);
     OUT_GPIO(COMMON_STOP);
@@ -250,11 +249,12 @@ void rpi_configure()
         OUT_GPIO(DATA[iter]);
 		GPIO_CLR = 1 << DATA[iter];
     }
+    
 
     GPIO_SET = 1 << WRITE; //write a 1 to the GPIOSET1 register bit 5
     GPIO_CLR = 1 << RST_L; //bring RST low to force oneshot state low
 	usleep(1000); //hold RST low for 1 ms
-    GPIO_SET = 1 << RST_L; //bring RST high to enable oneshot
+    GPIO_SET = 1 << RST_L; //bring RST high to enable oneshot 
 }
 
 void rpi_cleanup_gpio()
@@ -333,11 +333,11 @@ struct adc_readings read_adcs(void)
     set_conv(1);
     delay_ns(CONV_TIME_NS);
     set_conv(0);
-    delay_ns(CONV_SETUP_NS);
-    for(iter = 0; iter < 16; iter++)
+    //delay_ns(CONV_SETUP_NS);
+    for(iter = 15; iter >= 0; iter--)
     {
         GPIO_CLR = 1 << ADC_SCK;
-        delay_ns(SCK_PERIOD_NS/2);
+        delay_ns(500);
         GPIO_SET = 1 << ADC_SCK;
         //delay(ns(SCK_PERIOD_NS/2);
         readings.tvc |= (GET_GPIO(TVC_SDO)) ? (1 << iter):0;
@@ -353,13 +353,13 @@ void init_adcs(void)
     set_conv(1);
     delay_ns(CONV_TIME_NS);
     set_conv(0);
-    delay_ns(CONV_SETUP_NS);
+    //delay_ns(CONV_SETUP_NS);
     for(iter = 0; iter < 16; iter++)
     {
         GPIO_CLR = 1 << ADC_SCK;
-        delay_ns(SCK_PERIOD_NS/2);
+        delay_ns(500);
         GPIO_SET = 1 << ADC_SCK;
-        delay_ns(SCK_PERIOD_NS/2);
+        delay_ns(500);
     }
 }
 
@@ -368,7 +368,25 @@ char read_channel_number(void)
     char channel = 0;
     for(iter = 0; iter < ADDR_BITS; iter++)
     {
+    	INP_GPIO(MODE[iter]);
         channel |= GET_GPIO(MODE[iter]) ? (1 << iter):0;
+        //OUT_GPIO(MODE[iter]);
+    }
+    
+    return channel;
+}
+
+
+char read_addr_dat(void)
+{
+    char channel = 0;
+    for(iter = 0; iter < 8; iter++)
+    {
+    	INP_GPIO(DATA[iter]);
+    	delay_ns(1000);
+        channel |= GET_GPIO(DATA[iter]) ? (1 << iter):0;
+        OUT_GPIO(MODE[iter]);
+    	delay_ns(1000);
     }
     
     return channel;

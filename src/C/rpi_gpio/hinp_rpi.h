@@ -1,7 +1,7 @@
 #ifndef HINP_RPI_H
 #define HINP_RPI_H
 
-#define RPI4
+//#define RPI4
 
 #ifdef RPI4
     #define BCM2708_PERI_BASE        0xFE000000 //Start of peripheral memory mappings
@@ -125,7 +125,7 @@ void set_data(char data);
 void strobe_high(void);
 void strobe_low(void);
 void set_internal_agnd(char val);
-void pulse_rst_l(void);
+void pulse_rst_l(int val);
 void set_gen(char val);
 void set_write(void);
 void set_read(void);
@@ -138,6 +138,7 @@ void set_take_event(char state);
 struct adc_readings read_adcs(void);
 void init_adcs(void);
 char read_channel_number(void);
+char read_addr_dat(void);
 char read_or_out_pin(void);
 
 #endif
