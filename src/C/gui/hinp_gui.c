@@ -887,14 +887,14 @@ void on_Configure_Button_clicked()
     data = 0;
     data |= tvc_mode;
     printf("Setting TVC mode bit to: %d\n", tvc_mode);
-    data |= (neg_pol == COLLECT_HOLES) ? (1 << 2):0;
+    data |= (neg_pol == COLLECT_HOLES) ? (1 << 1):0;
     printf("Setting holes/electrons collection to: %s\n", (neg_pol) ? "HOLES":"ELECTRONS");
     data |= auto_reset << 3;
     printf("Setting analog auto reset bits to: %d\n", auto_reset);
     data |= ar_digital << 7;
     printf("Setting digital auto reset bit to: %d\n", ar_digital);
     
-    data = 0x0f;
+    data = 7 << 3;
     delay_ns(500);
     set_data(data);
     delay_ns(500);
@@ -1211,13 +1211,23 @@ void on_Load_Config_Button_clicked()
 void on_RST_Button_clicked()
 {
 	printf("Applying RST_L for 5 us\n");
-	//pulse_rst_l(5000);	
+	//pulse_rst_l(5000);
+	
+	set_read();
+	strobe_low();
+	set_data(0x06);
+	delay_ns(500);
+	strobe_high();
+	delay_ns(500);
+	set_read();
+	delay_ns(500);
+	strobe_low();
 	set_gen(1);
 	force_reset_high();
 	delay_ns(5000);
 	force_reset_low();
 	set_acq_all(1);
-	delay_ns(500);
+	//delay_ns(500);
 	set_acq_all(0);
 	
 }
