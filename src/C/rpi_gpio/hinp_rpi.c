@@ -102,16 +102,16 @@ void strobe_low()
 
 void set_internal_agnd(char val)
 {
-		val = 1;
+		//val = 1;
 		//GPIO_CLR = 1 << EXT_AGND;
-	/*if(val == ENABLE)
+	if(val == ENABLE)
 	{
-		GPIO_CLR = 1 << EXT_AGND;
+		GPIO_SET = 1 << EXT_AGND;
 	}
 	else
 	{
-		GPIO_SET = 1 << EXT_AGND;
-	}*/
+		GPIO_CLR = 1 << EXT_AGND;
+	}
 }
 
 void pulse_rst_l(int val)
@@ -337,7 +337,7 @@ struct adc_readings read_adcs(void)
     for(iter = 15; iter >= 0; iter--)
     {
         GPIO_CLR = 1 << ADC_SCK;
-        delay_ns(500);
+        //delay_ns(500);
         GPIO_SET = 1 << ADC_SCK;
         //delay(ns(SCK_PERIOD_NS/2);
         readings.tvc |= (GET_GPIO(TVC_SDO)) ? (1 << iter):0;
@@ -370,7 +370,7 @@ char read_channel_number(void)
     {
     	INP_GPIO(MODE[iter]);
         channel |= GET_GPIO(MODE[iter]) ? (1 << iter):0;
-        //OUT_GPIO(MODE[iter]);
+        OUT_GPIO(MODE[iter]);
     }
     
     return channel;
