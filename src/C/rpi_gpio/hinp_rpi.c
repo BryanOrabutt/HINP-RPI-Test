@@ -28,6 +28,7 @@ const unsigned char FORCE_RESET = 13; //Force digital reset and advance priority
 const unsigned char COMMON_STOP = 19; //Stop all TVCs.
 const unsigned char TAKE_EVENT = 6; //Start readout.
 const unsigned char OR_OUT = 17; //Logical OR of all channel hit registers.
+const unsigned char DUMMY = 15; //Dmmy pin for artifical delay
 
 int  mem_fd;
 void *gpio_map;
@@ -241,6 +242,10 @@ void rpi_configure()
     OUT_GPIO(TAKE_EVENT);
     GPIO_CLR = 1 << TAKE_EVENT;
     
+    INP_GPIO(DUMMY);
+    OUT_GPIO(DUMMY);
+    GPIO_CLR = 1 << DUMMY;
+    
     INP_GPIO(OR_OUT);      
  
     for(iter = 0; iter < 8; iter++)
@@ -266,6 +271,20 @@ void rpi_cleanup_gpio()
 	}
 }
 
+void toggle_dummy()
+{
+	static int state = 0;
+	
+	if(state)
+	{
+		GPIO_SET = 1 << DUMMY;
+	}
+	else
+	{
+		GPIO_CLR = 1 << DUMMY;
+	}
+	state = !state;
+}
 
 void set_conv(char state)
 {
@@ -331,13 +350,13 @@ struct adc_readings read_adcs(void)
 {
     struct adc_readings readings = {0};
     set_conv(1);
-    delay_ns(CONV_TIME_NS);
+    usleep(5);
     set_conv(0);
     //delay_ns(CONV_SETUP_NS);
     for(iter = 15; iter >= 0; iter--)
     {
         GPIO_CLR = 1 << ADC_SCK;
-        //delay_ns(500);
+        delay_ns(500);
         GPIO_SET = 1 << ADC_SCK;
         //delay(ns(SCK_PERIOD_NS/2);
         readings.tvc |= (GET_GPIO(TVC_SDO)) ? (1 << iter):0;
@@ -351,7 +370,8 @@ struct adc_readings read_adcs(void)
 void init_adcs(void)
 {
     set_conv(1);
-    delay_ns(CONV_TIME_NS);
+    //delay_ns(CONV_TIME_NS);
+    usleep(5);
     set_conv(0);
     //delay_ns(CONV_SETUP_NS);
     for(iter = 0; iter < 16; iter++)

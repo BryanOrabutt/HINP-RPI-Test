@@ -140,5 +140,6 @@ void init_adcs(void);
 char read_channel_number(void);
 char read_addr_dat(void);
 char read_or_out_pin(void);
+void toggle_dummy(void);
 
 #endif

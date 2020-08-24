@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include "hinp_rpi.h"
 #include <signal.h>
+#include <time.h>
 
 /* Setup GTK Object handles for each widget */
 
@@ -846,7 +847,7 @@ void on_Configure_Button_clicked()
 			delay_ns(500);
 			strobe_low();
 			printf("Channel%d shaper driving buffer\n", iter);
-			while(!read_or_out_pin() && wait_flag)
+			while(wait_flag)
 			{
 				
 			}
@@ -879,20 +880,26 @@ void on_Configure_Button_clicked()
 		{
 		    delay_ns(1850);
 		}*/
-		
+		//delay_ns(500);
+		//usleep(1);
+		for(int i = 0; i < 2; i++)
+		{
+			toggle_dummy();
+		}
 		set_common_stop(1);
 		set_gen(0);
 		set_write();
-		delay_ns(100);
+		delay_ns(500);
 		set_data(7);
-		delay_ns(100);
+		delay_ns(500);
 		strobe_high();
 		delay_ns(500);
-		strobe_low();
 		set_read();
+		delay_ns(500);
+		strobe_low();
 		set_take_event(1);
 		
-		for(iter = 0; iter < CHANNELS; iter++)
+		while(read_or_out_pin())
 		{
 		    int channel = read_addr_dat();
 		    adc_channel[channel] = read_adcs();
@@ -903,7 +910,7 @@ void on_Configure_Button_clicked()
 		    force_reset_low();
 		    set_take_event(0);
 		    force_reset_high();
-		    set_addr_mode(0, 8);
+		    set_data(8);
 		    force_reset_low();    
 		    printf("Channel %d read\n", channel);            
 		}
