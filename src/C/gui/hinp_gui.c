@@ -123,6 +123,11 @@ GtkWidget *Read_Register_Button_h;
 //ACQ All button
 GtkWidget *ACQ_All_Button_h;
 
+//Experiment and output features
+GtkWidget *Start_Experiment_Button_h;
+GtkWidget *Num_Events_Box_h;
+GtkWidget *Out_File_Box_h;
+
 
 /* Global variables */
 unsigned int leading_edge_dac[CHANNELS]; //value to write to individual channel
@@ -770,7 +775,7 @@ void on_Configure_Button_clicked()
     data = 0;
     data |= tvc_mode;
     printf("Setting TVC mode bit to: %d\n", tvc_mode);
-    data |= (neg_pol == COLLECT_HOLES) ? (1 << 1):0;
+    data |= (neg_pol == COLLECT_HOLES) ? (1 << 2):0;
     printf("Setting holes/electrons collection to: %s\n", (neg_pol) ? "HOLES":"ELECTRONS");
     data |= ~auto_reset << 3;
     printf("Setting analog auto reset bits to: %d\n", auto_reset);
@@ -829,159 +834,9 @@ void on_Configure_Button_clicked()
     strobe_low();
     
 	g_printf("Configuration done!\n");
-	set_read();
-	set_gen(gen);
+	//set_gen(gen);
     
-	if(sel_shaper)
-	{
-		for(iter = 0; iter < 16; iter++)
-		{
-			set_write();
-			wait_flag = 1;
-			data |= iter << 4; //load addr bits
-			data |= 7; //load mode bits
-			set_data(data);
-			strobe_high();
-			delay_ns(500);
-			set_read();
-			delay_ns(500);
-			strobe_low();
-			printf("Channel%d shaper driving buffer\n", iter);
-			while(wait_flag)
-			{
-				
-			}
-		}
-	}
-    else
-    {
-		
-	
-		gchar str[100];
-		struct adc_readings adc_channel[CHANNELS] = {{0}};
-		printf("Setting experiment mode (mode 7) and waiting for OR interrupt!\n");
-		set_write();
-		set_data(7);
-		delay_ns(500);
-		strobe_high();
-		set_read();
-		strobe_low();
-	
-		wait_flag = 1;
-		while(!read_or_out_pin() && wait_flag)
-		{
-		    
-		}
-		/*if(tvc_mode == TVC_500NS)
-		{
-		    delay_ns(400);
-		}
-		else
-		{
-		    delay_ns(1850);
-		}*/
-		//delay_ns(500);
-		//usleep(1);
-		for(int i = 0; i < 2; i++)
-		{
-			toggle_dummy();
-		}
-		set_common_stop(1);
-		set_gen(0);
-		set_write();
-		delay_ns(500);
-		set_data(7);
-		delay_ns(500);
-		strobe_high();
-		delay_ns(500);
-		set_read();
-		delay_ns(500);
-		strobe_low();
-		set_take_event(1);
-		
-		while(read_or_out_pin())
-		{
-		    int channel = read_addr_dat();
-		    adc_channel[channel] = read_adcs();
-		    strobe_high();
-		    force_reset_high();
-		    delay_ns(500);
-		    strobe_low();
-		    force_reset_low();
-		    set_take_event(0);
-		    force_reset_high();
-		    set_data(8);
-		    force_reset_low();    
-		    printf("Channel %d read\n", channel);            
-		}
-		set_common_stop(0);
-		printf("ADCs have been sampled!\n");
-		
-		for(iter = 0; iter < CHANNELS; iter++)
-		{
-		    g_snprintf(str, 99, "tvc: 0x%04X    lg: 0x%04X    hg: 0x%04X", adc_channel[iter].tvc, 
-		               adc_channel[iter].low_gain, adc_channel[iter].high_gain);
-		    
-		    switch(iter)
-		    {   
-		        case 0:
-		            gtk_entry_set_text(GTK_ENTRY(Channel0_ADC_Box_h), str);
-		            break;
-		        case 1:
-		            gtk_entry_set_text(GTK_ENTRY(Channel1_ADC_Box_h), str);
-		            break;
-		        case 2:
-		            gtk_entry_set_text(GTK_ENTRY(Channel2_ADC_Box_h), str);
-		            break;
-		        case 3:
-		            gtk_entry_set_text(GTK_ENTRY(Channel3_ADC_Box_h), str);
-		            break;
-		        case 4:
-		            gtk_entry_set_text(GTK_ENTRY(Channel4_ADC_Box_h), str);
-		            break;
-		        case 5:
-		            gtk_entry_set_text(GTK_ENTRY(Channel5_ADC_Box_h), str);
-		            break;
-		        case 6:
-		            gtk_entry_set_text(GTK_ENTRY(Channel6_ADC_Box_h), str);
-		            break;
-		        case 7:
-		            gtk_entry_set_text(GTK_ENTRY(Channel7_ADC_Box_h), str);
-		            break;
-		        case 8:
-		            gtk_entry_set_text(GTK_ENTRY(Channel8_ADC_Box_h), str);
-		            break;
-		        case 9:
-		            gtk_entry_set_text(GTK_ENTRY(Channel9_ADC_Box_h), str);
-		            break;
-		        case 10:
-		            gtk_entry_set_text(GTK_ENTRY(Channel10_ADC_Box_h), str);
-		            break;
-		        case 11:
-		            gtk_entry_set_text(GTK_ENTRY(Channel11_ADC_Box_h), str);
-		            break;
-		        case 12:
-		            gtk_entry_set_text(GTK_ENTRY(Channel12_ADC_Box_h), str);
-		            break;
-		        case 13:
-		            gtk_entry_set_text(GTK_ENTRY(Channel13_ADC_Box_h), str);
-		            break;
-		        case 14:
-		            gtk_entry_set_text(GTK_ENTRY(Channel14_ADC_Box_h), str);
-		            break;
-		        case 15:
-		            gtk_entry_set_text(GTK_ENTRY(Channel15_ADC_Box_h), str);
-		            break;
-		        default:
-		            printf("Error setting ADC box entries\n");
-		    }
-		}
-    }
- 
- 	set_read();
- 	delay_ns(500);
- 	strobe_low();
-    set_gen(gen);
+
 	
 }
 
@@ -1047,7 +902,7 @@ void on_Read_Register_Button_clicked()
 	for(int iter = 0; iter < 16; iter++)
 	{
 		set_write();
-		set_data(6);
+		set_data((iter << 4) | 6);
 		delay_ns(500);
 		strobe_high();
 		delay_ns(500);
@@ -1114,29 +969,205 @@ void on_FR_Button_clicked()
 	}	
 }
 
+void on_Start_Experiment_Button_clicked()
+{
+	int iter;
+	char data;
+	printf("Beginning experiment...\n");
+	if(sel_shaper)
+	{
+		printf("Diagnostic mode enabled.\n");
+		for(iter = 0; iter < 16; iter++)
+		{
+			set_write();
+			wait_flag = 1;
+			data |= iter << 4; //load addr bits
+			data |= 7; //load mode bits
+			set_data(data);
+			strobe_high();
+			delay_ns(500);
+			set_read();
+			delay_ns(500);
+			strobe_low();
+			printf("Channel%d shaper driving buffer\n", iter);
+			while(wait_flag)
+			{
+				
+			}
+		}
+	}
+    else
+    {
+		struct adc_readings adc_channel[CHANNELS] = {{0}};
+		gchar out_file_name[255];
+		int num_events = 0;
+		printf("Setting experiment mode (mode 7) and waiting for OR interrupt!\n");
+		set_write();
+		set_data(7);
+		delay_ns(500);
+		strobe_high();
+		set_read();
+		strobe_low();
+		
+		sscanf((char*)gtk_entry_get_text(GTK_ENTRY(Out_File_Box_h)), "%s", out_file_name);
+		
+		sscanf((char*)gtk_entry_get_text(GTK_ENTRY(Num_Events_Box_h)), "%d", &num_events);
+		
+		FILE* ofile_h = fopen(out_file_name, "w");
+		
+		if(num_events <= 0)
+		{
+			num_events = 1000000000;
+		}
+		
+		printf("Reading %d events\n", num_events);
+	
+		for(int j = 0; j < num_events; j++)
+		{
+			wait_flag = 1;
+			while(!read_or_out_pin() && wait_flag)
+			{
+				
+			}
+		
+			if(!wait_flag)
+			{
+				break;
+			}	
+			
+			/*if(tvc_mode == TVC_500NS)
+			{
+				for(int i = 0; i < 2; i++)
+				{
+					toggle_dummy();
+				}
+			}
+			else
+			{
+				for(int i = 0; i < 3; i++)
+				{
+					toggle_dummy();
+				}
+			}*/
+		
+			set_common_stop(1);
+			set_gen(0);
+
+			set_write();
+			delay_ns(500);
+			set_data(7);
+			delay_ns(500);
+			strobe_high();
+			delay_ns(500);
+			set_read();
+			delay_ns(500);
+			strobe_low();
+		
+			while(read_or_out_pin())
+			{
+				int channel = read_addr_dat();
+				adc_channel[channel] = read_adcs();
+				set_take_event(1);
+				strobe_high();
+				force_reset_high();
+				//delay_ns(500);
+				strobe_low();
+				force_reset_low();
+				set_take_event(0);
+				force_reset_high();
+				set_data(8);
+				force_reset_low();
+			}
+			set_common_stop(0);
+			set_gen(1);
+			printf("ADCs have been sampled!\n");
+			printf("Writing event#%d to file: %s\n", j, out_file_name);
+			fprintf(ofile_h, "Event %d:\nChannel\tTVC\tLG\tHG\n", j);
+			
+			for(iter = 0; iter < CHANNELS; iter++)
+			{
+				fprintf(ofile_h, "%d\t0x%02X\t0x%02X\t0x%02X\n\n", iter, adc_channel[iter].tvc, adc_channel[iter].low_gain, adc_channel[iter].high_gain);
+			}
+			fflush(ofile_h);
+		}
+		
+		fclose(ofile_h);
+		
+		for(iter = 0; iter < CHANNELS; iter++)
+		{
+			gchar str[100];
+			g_snprintf(str, 99, "tvc: 0x%04X    lg: 0x%04X    hg: 0x%04X", adc_channel[iter].tvc, adc_channel[iter].low_gain, adc_channel[iter].high_gain);
+		
+			switch(iter)
+			{   
+				case 0:
+				    gtk_entry_set_text(GTK_ENTRY(Channel0_ADC_Box_h), str);
+				    break;
+				case 1:
+				    gtk_entry_set_text(GTK_ENTRY(Channel1_ADC_Box_h), str);
+				    break;
+				case 2:
+				    gtk_entry_set_text(GTK_ENTRY(Channel2_ADC_Box_h), str);
+				    break;
+				case 3:
+				    gtk_entry_set_text(GTK_ENTRY(Channel3_ADC_Box_h), str);
+				    break;
+				case 4:
+				    gtk_entry_set_text(GTK_ENTRY(Channel4_ADC_Box_h), str);
+				    break;
+				case 5:
+				    gtk_entry_set_text(GTK_ENTRY(Channel5_ADC_Box_h), str);
+				    break;
+				case 6:
+				    gtk_entry_set_text(GTK_ENTRY(Channel6_ADC_Box_h), str);
+				    break;
+				case 7:
+				    gtk_entry_set_text(GTK_ENTRY(Channel7_ADC_Box_h), str);
+				    break;
+				case 8:
+				    gtk_entry_set_text(GTK_ENTRY(Channel8_ADC_Box_h), str);
+				    break;
+				case 9:
+				    gtk_entry_set_text(GTK_ENTRY(Channel9_ADC_Box_h), str);
+				    break;
+				case 10:
+				    gtk_entry_set_text(GTK_ENTRY(Channel10_ADC_Box_h), str);
+				    break;
+				case 11:
+				    gtk_entry_set_text(GTK_ENTRY(Channel11_ADC_Box_h), str);
+				    break;
+				case 12:
+				    gtk_entry_set_text(GTK_ENTRY(Channel12_ADC_Box_h), str);
+				    break;
+				case 13:
+				    gtk_entry_set_text(GTK_ENTRY(Channel13_ADC_Box_h), str);
+				    break;
+				case 14:
+				    gtk_entry_set_text(GTK_ENTRY(Channel14_ADC_Box_h), str);
+				    break;
+				case 15:
+				    gtk_entry_set_text(GTK_ENTRY(Channel15_ADC_Box_h), str);
+				    break;
+				default:
+				    printf("Error setting ADC box entries\n");
+			}
+		}
+		
+	}
+	
+	
+ 
+ 	set_read();
+ 	delay_ns(500);
+ 	strobe_low();
+    set_gen(gen);
+}
+
 /* Applys a 5 us low active reset pulse when button is clicked */
 void on_RST_Button_clicked()
 {
 	printf("Applying RST_L for 5 us\n");
 	pulse_rst_l(5000);
-	
-	/*
-	set_read();
-	strobe_low();
-	set_data(0x06);
-	delay_ns(500);
-	strobe_high();
-	delay_ns(500);
-	set_read();
-	delay_ns(500);
-	strobe_low();
-	set_gen(1);
-	force_reset_high();
-	delay_ns(5000);
-	force_reset_low();
-	set_acq_all(1);
-	//delay_ns(500);
-	set_acq_all(0);*/
 	
 }
 
@@ -1282,6 +1313,10 @@ int main(int argc, char *argv[])
 	FR_Button_h = GTK_WIDGET(gtk_builder_get_object(builder, "FR_BUTTON"));
 	ACQ_All_Button_h = GTK_WIDGET(gtk_builder_get_object(builder, "ACQ_All_Button"));
 	
+	Start_Experiment_Button_h = GTK_WIDGET(gtk_builder_get_object(builder, "Start_Experiment_Button"));
+	Num_Events_Box_h = GTK_WIDGET(gtk_builder_get_object(builder, "Num_Events_Box"));
+	Out_File_Box_h = GTK_WIDGET(gtk_builder_get_object(builder, "Out_File_Box"));
+	
 	/* end GUI building */
 
 	/* Set default values for configuration */
@@ -1336,12 +1371,12 @@ int main(int argc, char *argv[])
 	rpi_setup_io();
 	rpi_configure();
     	
-   	//set_read();
+   	set_read();
 	printf("Initializing ADCs for next conversion\n");
-    //	init_adcs();
+    //init_adcs();
 
 	//set_write();
-	int addr_dat = 0xaa;
+	//int addr_dat = 0xaa;
 	//set_data(addr_dat);
 
     //pthread_create(&or_thread, NULL, read_or_out, NULL);
