@@ -845,8 +845,43 @@ void on_Configure_Button_clicked()
 */
 void on_Save_Config_Button_clicked()
 {
+	GtkEntry* save_file = GTK_ENTRY(Save_File_Box_h); //GTK object handle for save text box
+	const gchar* filename = gtk_entry_get_text(save_file); //get file name from text box
 
-	//g_printf("File saved to: %s\n", filename);
+	
+	/* Open file for writing and verify no errors */
+	FILE* fd = fopen((const char*)filename, "w"); 
+
+	if(!fd)
+	{
+		perror("Failed to open file\n");
+		exit(EXIT_FAILURE);
+	}
+
+	fwrite(&gmode, sizeof(gmode), 1, fd);
+	fwrite(&neg_pol, sizeof(gmode), 1, fd);
+	fwrite(&gen, sizeof(gen), 1, fd);
+	fwrite(&int_agnd_en, sizeof(int_agnd_en), 1, fd);
+	fwrite(&agnd_trim, sizeof(agnd_trim), 1, fd);
+	fwrite(&nowlin_mode, sizeof(nowlin_mode), 1, fd);
+	fwrite(&nowlin_delay, sizeof(nowlin_delay), 1, fd);
+	fwrite(&autopeak, sizeof(autopeak), 1, fd);
+	fwrite(&odd_pulser, sizeof(odd_pulser), 1, fd);
+	fwrite(&even_pulser, sizeof(even_pulser), 1, fd);
+	fwrite(&sel_shaper, sizeof(sel_shaper), 1, fd);
+	fwrite(&ar_digital, sizeof(ar_digital), 1, fd);
+	fwrite(&auto_reset, sizeof(auto_reset), 1, fd);
+	fwrite(&tvc_buffer, sizeof(tvc_buffer), 1, fd);
+	fwrite(&hg_buffer, sizeof(hg_buffer), 1, fd);
+	fwrite(&lg_buffer, sizeof(lg_buffer), 1, fd);
+	fwrite(&tvc_mode, sizeof(tvc_mode), 1, fd);
+	
+	grab_dacs();
+	fwrite(leading_edge_dac, sizeof(unsigned int), CHANNELS, fd);
+	fwrite(ch_en, sizeof(char), CHANNELS, fd);
+	fwrite(ch_sign, sizeof(char), CHANNELS, fd);
+	
+	printf("Saved configuration data to %s.\n", filename);
 }
 
 /* When Load_Config is clicked, open a file using named specified in the
@@ -854,8 +889,126 @@ void on_Save_Config_Button_clicked()
 */
 void on_Load_Config_Button_clicked()
 {
+	GtkEntry* load_file = GTK_ENTRY(Load_File_Box_h); //GTK object handle for load text box
+	const gchar* filename = gtk_entry_get_text(load_file); //read file name from text box
 	
-	//g_printf("Loaded configuration from file: %s\n", filename);
+	/* Attempt to open file for read */
+	FILE* fd = fopen((const char*)filename, "r");
+	gchar str[7];
+
+	if(!fd)
+	{
+		perror("Failed to open file\n");
+		exit(EXIT_FAILURE);
+	}
+
+	/* Load configuration data and update GUI */
+	fread(&gmode, sizeof(gmode), 1, fd);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GMode_CB_h), gmode);	
+	fread(&neg_pol, sizeof(gmode), 1, fd);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Neg_Pol_CB_h), neg_pol);	
+	fread(&gen, sizeof(gen), 1, fd);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GEN_CB_h), gen);	
+	fread(&int_agnd_en, sizeof(int_agnd_en), 1, fd);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GEN_CB_h), gen);	
+	fread(&agnd_trim, sizeof(agnd_trim), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(AGND_Trim_Menu_h), agnd_trim);
+	fread(&nowlin_mode, sizeof(nowlin_mode), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(Nowlin_Mode_Menu_h), nowlin_mode);
+	fread(&nowlin_delay, sizeof(nowlin_delay), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(Nowlin_Delay_Menu_h), nowlin_delay);
+	fread(&autopeak, sizeof(autopeak), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(Autopeak_CB_h), autopeak);
+	fread(&odd_pulser, sizeof(odd_pulser), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(Odd_Pulser_CB_h), odd_pulser);
+	fread(&even_pulser, sizeof(even_pulser), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(Even_Pulser_CB_h), even_pulser);
+	fread(&sel_shaper, sizeof(sel_shaper), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(Sel_Shaper_CB_h), sel_shaper);
+	fread(&ar_digital, sizeof(ar_digital), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(AR_Digital_Menu_h), ar_digital);
+	fread(&auto_reset, sizeof(auto_reset), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(Auto_Reset_Menu_h), auto_reset);
+	fread(&tvc_buffer, sizeof(tvc_buffer), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(TVC_Buff_Menu_h), tvc_buffer);
+	fread(&hg_buffer, sizeof(hg_buffer), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(HG_Buff_Menu_h), hg_buffer);
+	fread(&lg_buffer, sizeof(lg_buffer), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(LG_Buff_Menu_h), lg_buffer);
+	fread(&tvc_mode, sizeof(tvc_mode), 1, fd);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(TVC_Mode_Menu_h), tvc_mode);
+	
+	fread(leading_edge_dac, sizeof(unsigned int), CHANNELS, fd);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[0]);
+	gtk_entry_set_text(GTK_ENTRY(Channel0_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[1]);
+	gtk_entry_set_text(GTK_ENTRY(Channel1_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[2]);
+	gtk_entry_set_text(GTK_ENTRY(Channel2_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[3]);
+	gtk_entry_set_text(GTK_ENTRY(Channel3_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[4]);
+	gtk_entry_set_text(GTK_ENTRY(Channel4_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[5]);
+	gtk_entry_set_text(GTK_ENTRY(Channel5_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[6]);
+	gtk_entry_set_text(GTK_ENTRY(Channel6_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[7]);
+	gtk_entry_set_text(GTK_ENTRY(Channel7_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[8]);
+	gtk_entry_set_text(GTK_ENTRY(Channel8_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[9]);
+	gtk_entry_set_text(GTK_ENTRY(Channel9_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[10]);
+	gtk_entry_set_text(GTK_ENTRY(Channel10_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[11]);
+	gtk_entry_set_text(GTK_ENTRY(Channel11_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[12]);
+	gtk_entry_set_text(GTK_ENTRY(Channel12_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[13]);
+	gtk_entry_set_text(GTK_ENTRY(Channel13_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[14]);
+	gtk_entry_set_text(GTK_ENTRY(Channel14_LE_DAC_Box_h), str);
+	g_snprintf(str, 6, "0x%02X", leading_edge_dac[15]);
+	gtk_entry_set_text(GTK_ENTRY(Channel15_LE_DAC_Box_h), str);
+	
+	fread(ch_en, sizeof(char), CHANNELS, fd);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel0_EN_CB_h), ch_en[0]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel1_EN_CB_h), ch_en[1]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel2_EN_CB_h), ch_en[2]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel3_EN_CB_h), ch_en[3]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel4_EN_CB_h), ch_en[4]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel5_EN_CB_h), ch_en[5]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel6_EN_CB_h), ch_en[6]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel7_EN_CB_h), ch_en[7]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel8_EN_CB_h), ch_en[8]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel9_EN_CB_h), ch_en[9]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel10_EN_CB_h), ch_en[10]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel11_EN_CB_h), ch_en[11]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel12_EN_CB_h), ch_en[12]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel13_EN_CB_h), ch_en[13]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel14_EN_CB_h), ch_en[14]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel15_EN_CB_h), ch_en[15]);
+	
+	fread(ch_sign, sizeof(char), CHANNELS, fd);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel0_Sign_CB_h), ch_sign[0]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel1_Sign_CB_h), ch_sign[1]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel2_Sign_CB_h), ch_sign[2]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel3_Sign_CB_h), ch_sign[3]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel4_Sign_CB_h), ch_sign[4]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel5_Sign_CB_h), ch_sign[5]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel6_Sign_CB_h), ch_sign[6]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel7_Sign_CB_h), ch_sign[7]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel8_Sign_CB_h), ch_sign[8]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel9_Sign_CB_h), ch_sign[9]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel10_Sign_CB_h), ch_sign[10]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel11_Sign_CB_h), ch_sign[11]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel12_Sign_CB_h), ch_sign[12]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel13_Sign_CB_h), ch_sign[13]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel14_Sign_CB_h), ch_sign[14]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel15_Sign_CB_h), ch_sign[15]);
+	
+	printf("Loading configuration data from %s.\n", filename);
 }
 
 void on_Read_Register_Button_clicked()
