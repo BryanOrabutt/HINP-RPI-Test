@@ -881,6 +881,8 @@ void on_Save_Config_Button_clicked()
 	fwrite(ch_en, sizeof(char), CHANNELS, fd);
 	fwrite(ch_sign, sizeof(char), CHANNELS, fd);
 	
+	fclose(fd);
+	
 	printf("Saved configuration data to %s.\n", filename);
 }
 
@@ -918,13 +920,13 @@ void on_Load_Config_Button_clicked()
 	fread(&nowlin_delay, sizeof(nowlin_delay), 1, fd);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(Nowlin_Delay_Menu_h), nowlin_delay);
 	fread(&autopeak, sizeof(autopeak), 1, fd);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(Autopeak_CB_h), autopeak);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Autopeak_CB_h), autopeak);
 	fread(&odd_pulser, sizeof(odd_pulser), 1, fd);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(Odd_Pulser_CB_h), odd_pulser);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Odd_Pulser_CB_h), odd_pulser);
 	fread(&even_pulser, sizeof(even_pulser), 1, fd);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(Even_Pulser_CB_h), even_pulser);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Even_Pulser_CB_h), even_pulser);
 	fread(&sel_shaper, sizeof(sel_shaper), 1, fd);
-	gtk_combo_box_set_active(GTK_COMBO_BOX(Sel_Shaper_CB_h), sel_shaper);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Sel_Shaper_CB_h), sel_shaper);
 	fread(&ar_digital, sizeof(ar_digital), 1, fd);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(AR_Digital_Menu_h), ar_digital);
 	fread(&auto_reset, sizeof(auto_reset), 1, fd);
@@ -939,6 +941,10 @@ void on_Load_Config_Button_clicked()
 	gtk_combo_box_set_active(GTK_COMBO_BOX(TVC_Mode_Menu_h), tvc_mode);
 	
 	fread(leading_edge_dac, sizeof(unsigned int), CHANNELS, fd);
+	
+	for(int j = 0; j < 16; j++)
+		printf("DAC%d: 0x%02X\n", j, leading_edge_dac[j]);
+	
 	g_snprintf(str, 6, "0x%02X", leading_edge_dac[0]);
 	gtk_entry_set_text(GTK_ENTRY(Channel0_LE_DAC_Box_h), str);
 	g_snprintf(str, 6, "0x%02X", leading_edge_dac[1]);
@@ -972,7 +978,39 @@ void on_Load_Config_Button_clicked()
 	g_snprintf(str, 6, "0x%02X", leading_edge_dac[15]);
 	gtk_entry_set_text(GTK_ENTRY(Channel15_LE_DAC_Box_h), str);
 	
+	fread(ch_sign, sizeof(char), CHANNELS, fd);
+	char temp[16];
+	for(int j = 0; j < 16; j++)
+		temp[j] = ch_sign[j];
+		
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel0_Sign_CB_h), ch_sign[0]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel1_Sign_CB_h), ch_sign[1]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel2_Sign_CB_h), ch_sign[2]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel3_Sign_CB_h), ch_sign[3]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel4_Sign_CB_h), ch_sign[4]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel5_Sign_CB_h), ch_sign[5]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel6_Sign_CB_h), ch_sign[6]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel7_Sign_CB_h), ch_sign[7]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel8_Sign_CB_h), ch_sign[8]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel9_Sign_CB_h), ch_sign[9]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel10_Sign_CB_h), ch_sign[10]);
+
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel11_Sign_CB_h), ch_sign[11]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel12_Sign_CB_h), ch_sign[12]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel13_Sign_CB_h), ch_sign[13]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel14_Sign_CB_h), ch_sign[14]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel15_Sign_CB_h), ch_sign[15]);
+		
+	for(int j = 0; j < 16; j++)
+	{
+		ch_sign[j] = temp[j];	
+		printf("Channel%d sign bit: %d\n", j, ch_sign[j]);
+	}
+	
 	fread(ch_en, sizeof(char), CHANNELS, fd);
+	for(int j = 0; j < 16; j++)
+		temp[j] = ch_en[j];
+		
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel0_EN_CB_h), ch_en[0]);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel1_EN_CB_h), ch_en[1]);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel2_EN_CB_h), ch_en[2]);
@@ -990,23 +1028,13 @@ void on_Load_Config_Button_clicked()
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel14_EN_CB_h), ch_en[14]);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel15_EN_CB_h), ch_en[15]);
 	
-	fread(ch_sign, sizeof(char), CHANNELS, fd);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel0_Sign_CB_h), ch_sign[0]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel1_Sign_CB_h), ch_sign[1]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel2_Sign_CB_h), ch_sign[2]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel3_Sign_CB_h), ch_sign[3]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel4_Sign_CB_h), ch_sign[4]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel5_Sign_CB_h), ch_sign[5]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel6_Sign_CB_h), ch_sign[6]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel7_Sign_CB_h), ch_sign[7]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel8_Sign_CB_h), ch_sign[8]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel9_Sign_CB_h), ch_sign[9]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel10_Sign_CB_h), ch_sign[10]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel11_Sign_CB_h), ch_sign[11]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel12_Sign_CB_h), ch_sign[12]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel13_Sign_CB_h), ch_sign[13]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel14_Sign_CB_h), ch_sign[14]);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Channel15_Sign_CB_h), ch_sign[15]);
+	for(int j = 0; j < 16; j++)
+	{
+		ch_en[j] = temp[j];	
+		printf("Channel%d enable bit: %d\n", j, ch_en[j]);
+	}
+	
+	fclose(fd);
 	
 	printf("Loading configuration data from %s.\n", filename);
 }
@@ -1216,32 +1244,37 @@ void on_Start_Experiment_Button_clicked()
 			delay_ns(500);
 			strobe_low();
 		
+			set_take_event(1);
+			char* is_hit = calloc(16, sizeof(char));
+			
 			while(read_or_out_pin())
 			{
 				int channel = read_addr_dat();
+				is_hit[channel] = 1;
 				adc_channel[channel] = read_adcs();
-				set_take_event(1);
 				strobe_high();
 				force_reset_high();
 				//delay_ns(500);
 				strobe_low();
 				force_reset_low();
-				set_take_event(0);
 				force_reset_high();
 				set_data(8);
 				force_reset_low();
 			}
+			set_take_event(0);
 			set_common_stop(0);
 			set_gen(1);
 			printf("ADCs have been sampled!\n");
 			printf("Writing event#%d to file: %s\n", j, out_file_name);
-			fprintf(ofile_h, "Event %d:\nChannel\tTVC\tLG\tHG\n", j);
+			fprintf(ofile_h, "Event %d:\nChannel\tTVC\tLG\tHG\tHIT\n", j);
 			
 			for(iter = 0; iter < CHANNELS; iter++)
 			{
-				fprintf(ofile_h, "%d\t0x%02X\t0x%02X\t0x%02X\n\n", iter, adc_channel[iter].tvc, adc_channel[iter].low_gain, adc_channel[iter].high_gain);
+				fprintf(ofile_h, "%d\t0x%02X\t0x%02X\t0x%02X\t%d\n\n", iter, adc_channel[iter].tvc, adc_channel[iter].low_gain, adc_channel[iter].high_gain, is_hit[iter]);
 			}
 			fflush(ofile_h);
+			free(is_hit);
+			is_hit = NULL;
 		}
 		
 		fclose(ofile_h);
