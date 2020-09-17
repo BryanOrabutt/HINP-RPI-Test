@@ -8,6 +8,8 @@
 #include <signal.h>
 #include <time.h>
 
+//#define DEBUG
+
 /* Setup GTK Object handles for each widget */
 
 //global settings check boxes
@@ -893,6 +895,7 @@ void on_Load_Config_Button_clicked()
 {
 	GtkEntry* load_file = GTK_ENTRY(Load_File_Box_h); //GTK object handle for load text box
 	const gchar* filename = gtk_entry_get_text(load_file); //read file name from text box
+	char tmp_char;
 	
 	/* Attempt to open file for read */
 	FILE* fd = fopen((const char*)filename, "r");
@@ -906,39 +909,73 @@ void on_Load_Config_Button_clicked()
 
 	/* Load configuration data and update GUI */
 	fread(&gmode, sizeof(gmode), 1, fd);
+	tmp_char = gmode;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GMode_CB_h), gmode);	
+	gmode = tmp_char;
 	fread(&neg_pol, sizeof(gmode), 1, fd);
+	tmp_char = neg_pol;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Neg_Pol_CB_h), neg_pol);	
+	neg_pol = tmp_char;
 	fread(&gen, sizeof(gen), 1, fd);
+	tmp_char = gmode;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GEN_CB_h), gen);	
+	gmode = tmp_char;
 	fread(&int_agnd_en, sizeof(int_agnd_en), 1, fd);
+	tmp_char = int_agnd_en;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(GEN_CB_h), gen);	
+	int_agnd_en = tmp_char;
 	fread(&agnd_trim, sizeof(agnd_trim), 1, fd);
+	tmp_char = agnd_trim;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(AGND_Trim_Menu_h), agnd_trim);
+	agnd_trim = tmp_char;
 	fread(&nowlin_mode, sizeof(nowlin_mode), 1, fd);
+	tmp_char = nowlin_mode;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(Nowlin_Mode_Menu_h), nowlin_mode);
+	nowlin_mode = tmp_char;
 	fread(&nowlin_delay, sizeof(nowlin_delay), 1, fd);
+	tmp_char = nowlin_delay;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(Nowlin_Delay_Menu_h), nowlin_delay);
+	nowlin_delay = tmp_char;
 	fread(&autopeak, sizeof(autopeak), 1, fd);
+	tmp_char = autopeak;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Autopeak_CB_h), autopeak);
+	autopeak = tmp_char;
 	fread(&odd_pulser, sizeof(odd_pulser), 1, fd);
+	tmp_char = odd_pulser;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Odd_Pulser_CB_h), odd_pulser);
+	odd_pulser = tmp_char;
 	fread(&even_pulser, sizeof(even_pulser), 1, fd);
+	tmp_char = even_pulser;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Even_Pulser_CB_h), even_pulser);
+	even_pulser = tmp_char;
 	fread(&sel_shaper, sizeof(sel_shaper), 1, fd);
+	tmp_char = sel_shaper;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(Sel_Shaper_CB_h), sel_shaper);
+	sel_shaper = tmp_char;
 	fread(&ar_digital, sizeof(ar_digital), 1, fd);
+	tmp_char = ar_digital;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(AR_Digital_Menu_h), ar_digital);
+	ar_digital = tmp_char;
 	fread(&auto_reset, sizeof(auto_reset), 1, fd);
+	tmp_char = auto_reset;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(Auto_Reset_Menu_h), auto_reset);
+	auto_reset = tmp_char;
 	fread(&tvc_buffer, sizeof(tvc_buffer), 1, fd);
+	tmp_char = tvc_buffer;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(TVC_Buff_Menu_h), tvc_buffer);
+	tvc_buffer = tmp_char;
 	fread(&hg_buffer, sizeof(hg_buffer), 1, fd);
+	tmp_char = hg_buffer;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(HG_Buff_Menu_h), hg_buffer);
+	hg_buffer = tmp_char;
 	fread(&lg_buffer, sizeof(lg_buffer), 1, fd);
+	tmp_char = lg_buffer;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(LG_Buff_Menu_h), lg_buffer);
+	lg_buffer = tmp_char;
 	fread(&tvc_mode, sizeof(tvc_mode), 1, fd);
+	tmp_char = tvc_mode;
 	gtk_combo_box_set_active(GTK_COMBO_BOX(TVC_Mode_Menu_h), tvc_mode);
+	tvc_mode = tmp_char;
 	
 	fread(leading_edge_dac, sizeof(unsigned int), CHANNELS, fd);
 	
@@ -1230,7 +1267,7 @@ void on_Start_Experiment_Button_clicked()
 					toggle_dummy();
 				}
 			}*/
-		
+		/*
 			set_common_stop(1);
 			set_gen(0);
 
@@ -1258,14 +1295,25 @@ void on_Start_Experiment_Button_clicked()
 				strobe_low();
 				force_reset_low();
 				force_reset_high();
-				set_data(8);
 				force_reset_low();
 			}
 			set_take_event(0);
 			set_common_stop(0);
+			
+			//global force reset.
+			force_reset_high();
+			set_data(8);
+			set_write();
+			strobe_high();
+			force_reset_low();
+			set_read();
+			strobe_low();
+			
 			set_gen(1);
+			#ifdef DEBUG
 			printf("ADCs have been sampled!\n");
 			printf("Writing event#%d to file: %s\n", j, out_file_name);
+			#endif
 			fprintf(ofile_h, "Event %d:\nChannel\tTVC\tLG\tHG\tHIT\n", j);
 			
 			for(iter = 0; iter < CHANNELS; iter++)
@@ -1274,7 +1322,7 @@ void on_Start_Experiment_Button_clicked()
 			}
 			fflush(ofile_h);
 			free(is_hit);
-			is_hit = NULL;
+			is_hit = NULL;*/
 		}
 		
 		fclose(ofile_h);

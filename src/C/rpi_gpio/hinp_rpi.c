@@ -349,6 +349,7 @@ void set_take_event(char state)
 struct adc_readings read_adcs(void)
 {
     struct adc_readings readings = {0};
+    usleep(5);
     set_conv(1);
     usleep(5);
     set_conv(0);
