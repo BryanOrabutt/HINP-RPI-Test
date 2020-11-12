@@ -1197,10 +1197,11 @@ void on_Start_Experiment_Button_clicked()
 		printf("Diagnostic mode enabled.\n");
 		for(iter = 0; iter < 16; iter++)
 		{
+			data = 0;
 			set_write();
 			wait_flag = 1;
 			data |= iter << 4; //load addr bits
-			data |= 7; //load mode bits
+			data |= 3; //load mode bits
 			set_data(data);
 			strobe_high();
 			delay_ns(500);
@@ -1224,7 +1225,7 @@ void on_Start_Experiment_Button_clicked()
 		set_data(7);
 		delay_ns(500);
 		strobe_high();
-		set_read();
+		//set_read();
 		strobe_low();
 		
 		sscanf((char*)gtk_entry_get_text(GTK_ENTRY(Out_File_Box_h)), "%s", out_file_name);
@@ -1267,7 +1268,7 @@ void on_Start_Experiment_Button_clicked()
 					toggle_dummy();
 				}
 			}*/
-		/*
+		
 			set_common_stop(1);
 			set_gen(0);
 
@@ -1322,7 +1323,7 @@ void on_Start_Experiment_Button_clicked()
 			}
 			fflush(ofile_h);
 			free(is_hit);
-			is_hit = NULL;*/
+			is_hit = NULL;
 		}
 		
 		fclose(ofile_h);
@@ -1387,9 +1388,7 @@ void on_Start_Experiment_Button_clicked()
 			}
 		}
 		
-	}
-	
-	
+	}	
  
  	set_read();
  	delay_ns(500);
