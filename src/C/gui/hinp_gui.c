@@ -1191,7 +1191,7 @@ void on_FR_Button_clicked()
 void on_Start_Experiment_Button_clicked()
 {
 	int iter;
-	char data;
+	char data = 0;
 	printf("Beginning experiment...\n");
 	
 	#ifdef AGND_TEST
@@ -1271,7 +1271,7 @@ void on_Start_Experiment_Button_clicked()
 		set_data(7);
 		delay_ns(500);
 		strobe_high();
-		//set_read();
+		set_read();
 		strobe_low();
 		
 		sscanf((char*)gtk_entry_get_text(GTK_ENTRY(Out_File_Box_h)), "%s", out_file_name);
@@ -1324,7 +1324,7 @@ void on_Start_Experiment_Button_clicked()
 			delay_ns(500);
 			strobe_high();
 			delay_ns(500);
-			set_read();
+			//set_read();
 			delay_ns(500);
 			strobe_low();
 		
@@ -1334,6 +1334,7 @@ void on_Start_Experiment_Button_clicked()
 			while(read_or_out_pin())
 			{
 				int channel = read_addr_dat();
+				set_read();
 				is_hit[channel] = 1;
 				adc_channel[channel] = read_adcs();
 				strobe_high();
@@ -1343,6 +1344,7 @@ void on_Start_Experiment_Button_clicked()
 				force_reset_low();
 				force_reset_high();
 				force_reset_low();
+				strobe_high();
 			}
 			set_take_event(0);
 			set_common_stop(0);
