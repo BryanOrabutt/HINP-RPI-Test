@@ -1196,7 +1196,7 @@ void on_Start_Experiment_Button_clicked()
 	
 	#ifdef AGND_TEST
 	
-		struct adc_readings adc_channel = 0;
+		struct adc_readings adc_channel = {0};
 		gchar out_file_name[255];
 		int num_events = 0;
 		printf("Setting experiment mode (mode 7) and waiting for OR interrupt!\n");
@@ -1233,8 +1233,6 @@ void on_Start_Experiment_Button_clicked()
 			#endif
 			fprintf(ofile_h, "0x%02X\t0x%02X\t0x%02X\n", adc_channel.tvc, adc_channel.low_gain, adc_channel.high_gain);
 			fflush(ofile_h);
-			free(is_hit);
-			is_hit = NULL;
 		}
 		
 		set_gen(1);
