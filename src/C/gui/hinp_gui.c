@@ -9,6 +9,7 @@
 #include <time.h>
 
 //#define DEBUG
+#define AGND_TEST
 
 /* Setup GTK Object handles for each widget */
 
@@ -1192,6 +1193,53 @@ void on_Start_Experiment_Button_clicked()
 	int iter;
 	char data;
 	printf("Beginning experiment...\n");
+	
+	#ifdef AGND_TEST
+	
+		struct adc_readings adc_channel = 0;
+		gchar out_file_name[255];
+		int num_events = 0;
+		printf("Setting experiment mode (mode 7) and waiting for OR interrupt!\n");
+		set_write();
+		set_data(7);
+		delay_ns(500);
+		strobe_high();
+		//set_read();
+		strobe_low();
+		
+		sscanf((char*)gtk_entry_get_text(GTK_ENTRY(Out_File_Box_h)), "%s", out_file_name);
+		
+		sscanf((char*)gtk_entry_get_text(GTK_ENTRY(Num_Events_Box_h)), "%d", &num_events);
+		
+		FILE* ofile_h = fopen(out_file_name, "w");
+		
+		if(num_events <= 0)
+		{
+			num_events = 1000000000;
+		}
+		
+		printf("Reading %d events\n", num_events);
+		set_gen(0);
+		
+		fprintf(ofile_h, "AGND READING\n");
+	
+		for(int j = 0; j < num_events; j++)
+		{
+		
+			adc_channel = read_adcs();
+			#ifdef DEBUG
+			printf("ADCs have been sampled!\n");
+			printf("Writing event#%d to file: %s\n", j, out_file_name);
+			#endif
+			fprintf(ofile_h, "0x%02X\t0x%02X\t0x%02X\n", adc_channel.tvc, adc_channel.low_gain, adc_channel.high_gain);
+			fflush(ofile_h);
+			free(is_hit);
+			is_hit = NULL;
+		}
+		
+		set_gen(1);
+	#else
+	
 	if(sel_shaper)
 	{
 		printf("Diagnostic mode enabled.\n");
@@ -1326,6 +1374,7 @@ void on_Start_Experiment_Button_clicked()
 			is_hit = NULL;
 		}
 		
+		
 		fclose(ofile_h);
 		
 		for(iter = 0; iter < CHANNELS; iter++)
@@ -1390,6 +1439,7 @@ void on_Start_Experiment_Button_clicked()
 		
 	}	
  
+	#endif
  	set_read();
  	delay_ns(500);
  	strobe_low();

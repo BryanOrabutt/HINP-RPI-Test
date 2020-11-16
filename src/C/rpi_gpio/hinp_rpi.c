@@ -372,16 +372,17 @@ void init_adcs(void)
 {
     set_conv(1);
     //delay_ns(CONV_TIME_NS);
-    usleep(5);
+    usleep(10);
     set_conv(0);
     //delay_ns(CONV_SETUP_NS);
     for(iter = 0; iter < 16; iter++)
     {
         GPIO_CLR = 1 << ADC_SCK;
-        delay_ns(500);
+		usleep(1);
         GPIO_SET = 1 << ADC_SCK;
-        delay_ns(500);
+		usleep(1);
     }
+	usleep(1);
 }
 
 char read_channel_number(void)
