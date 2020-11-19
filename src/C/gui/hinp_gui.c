@@ -9,7 +9,7 @@
 #include <time.h>
 
 //#define DEBUG
-#define AGND_TEST
+//#define AGND_TEST
 
 /* Setup GTK Object handles for each widget */
 
@@ -458,7 +458,7 @@ void on_TVC_Buff_Menu_changed()
 /* When HG buffer changes, save delay menu index into hg_buffer
  * variable and print a message
 */
-void on_HG_Buff_Menu_changed()
+void on_HG_Buffer_Menu_changed()
 {
 	GtkComboBoxText* buff_box = GTK_COMBO_BOX_TEXT(HG_Buff_Menu_h);
 	
@@ -751,9 +751,9 @@ void on_Configure_Button_clicked()
     data = 0;
     data |= ((hg_buffer == BUFF_NEG_50) || (hg_buffer == BUFF_NEG_25)) ? 1:0;
     printf("Setting HG buffer polarity bit: %d\n", ((hg_buffer == BUFF_NEG_50) || (hg_buffer == BUFF_NEG_25)));
-    data |= ((lg_buffer == BUFF_50) || (lg_buffer == BUFF_NEG_50)) ? 0:(1 << 1);
+    data |= ((lg_buffer == BUFF_50) || (lg_buffer == BUFF_NEG_50)) ? 0:(1 << 2);
     printf("Setting LG buffer bias level bit to: %d\n", !((lg_buffer == BUFF_50) || (lg_buffer == BUFF_NEG_50)));
-    data |= ((lg_buffer == BUFF_NEG_50) || (lg_buffer == BUFF_NEG_25)) ? 1:0;
+    data |= ((lg_buffer == BUFF_NEG_50) || (lg_buffer == BUFF_NEG_25)) ? (1 << 1):0;
     printf("Setting LG buffer polarity bit to: %d\n", ((lg_buffer == BUFF_NEG_50) || (lg_buffer == BUFF_NEG_25)));
     data |= autopeak << 3;
     printf("Setting autopeak enable bit to: %d\n", autopeak);
@@ -1222,10 +1222,11 @@ void on_Start_Experiment_Button_clicked()
 		set_gen(0);
 		
 		fprintf(ofile_h, "AGND READING\n");
+		
+			set_take_event(1);
 	
 		for(int j = 0; j < num_events; j++)
 		{
-		
 			adc_channel = read_adcs();
 			#ifdef DEBUG
 			printf("ADCs have been sampled!\n");
@@ -1247,14 +1248,17 @@ void on_Start_Experiment_Button_clicked()
 			set_write();
 			wait_flag = 1;
 			data |= iter << 4; //load addr bits
-			data |= 3; //load mode bits
+			data |= 7; //load mode bits
 			set_data(data);
+			delay_ns(500);
 			strobe_high();
+    		set_gen(1);
 			delay_ns(500);
 			set_read();
 			delay_ns(500);
 			strobe_low();
 			printf("Channel%d shaper driving buffer\n", iter);
+			printf("Data = 0x%02x\n", data);
 			while(wait_flag)
 			{
 				
