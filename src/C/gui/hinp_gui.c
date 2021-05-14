@@ -1242,21 +1242,35 @@ void on_Start_Experiment_Button_clicked()
 	if(sel_shaper)
 	{
 		printf("Diagnostic mode enabled.\n");
+		set_gen(0);
+		
+		data = 8; //set gmode
+		set_data(data);
+		set_write();
+		delay(500);
+		strobe_high();
+		
+		//perform global force reset
+		force_reset_high();
+		delay_ns(500);
+		set_read();
+		strobe_low();
+		delay(500);
+		force_reset_low();
 		for(iter = 0; iter < 16; iter++)
 		{
+			set_gen(0);
 			data = 0;
 			set_write();
 			wait_flag = 1;
 			data |= iter << 4; //load addr bits
-			data |= 7; //load mode bits
+			data |= 3; //load mode bits
 			set_data(data);
 			delay_ns(500);
 			strobe_high();
-    		set_gen(1);
-			delay_ns(500);
-			set_read();
 			delay_ns(500);
 			strobe_low();
+			set_gen(1);
 			printf("Channel%d shaper driving buffer\n", iter);
 			printf("Data = 0x%02x\n", data);
 			while(wait_flag)
