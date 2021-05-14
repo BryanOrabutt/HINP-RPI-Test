@@ -1239,6 +1239,12 @@ void on_Start_Experiment_Button_clicked()
 		set_gen(1);
 	#else
 	
+	/*  If sel_shaper bit is set:
+	 *  Perform a global force reset to clear all hit registers.
+	 *  Enter into diganostic mode for the channel we want to observe.
+	 *       |__ This is done by iterating through each channel and writing to the channel address with mode 3 (diagnostic mode)
+	 *  Write must be asseted. 
+	 */
 	if(sel_shaper)
 	{
 		printf("Diagnostic mode enabled.\n");
