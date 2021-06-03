@@ -1253,7 +1253,7 @@ void on_Start_Experiment_Button_clicked()
 		data = 8; //set gmode
 		set_data(data);
 		set_write();
-		delay(500);
+		delay_ns(500);
 		strobe_high();
 		
 		//perform global force reset
@@ -1261,7 +1261,7 @@ void on_Start_Experiment_Button_clicked()
 		delay_ns(500);
 		set_read();
 		strobe_low();
-		delay(500);
+		delay_ns(500);
 		force_reset_low();
 		for(iter = 0; iter < 16; iter++)
 		{
@@ -1348,7 +1348,7 @@ void on_Start_Experiment_Button_clicked()
 			delay_ns(500);
 			strobe_high();
 			delay_ns(500);
-			//set_read();
+			set_read();
 			delay_ns(500);
 			strobe_low();
 		
