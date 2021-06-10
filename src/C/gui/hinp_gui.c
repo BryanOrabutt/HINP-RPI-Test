@@ -22,6 +22,7 @@ GtkWidget *Autopeak_CB_h;
 GtkWidget *Sel_Shaper_CB_h;
 GtkWidget *Odd_Pulser_CB_h;
 GtkWidget *Even_Pulser_CB_h;
+GtkWidget *Take_Event_CB_h;
 
 //global settings combo boxes/text boxes
 GtkWidget *Nowlin_Mode_Menu_h;
@@ -190,6 +191,17 @@ void on_GEN_CB_toggled()
 	set_gen(gen);
 	printf("GEN toggled: %s\n", (gen) ? "ON":"OFF");
 }
+
+/* When GEN is toggled, change the gen variable and print a message */
+void on_Take_Event_CB_toggled()
+{
+	printf("take_event_ch = %p\n", Take_Event_CB_h);
+	char te = 0;
+	te = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Take_Event_CB_h))) ? 1:0;
+	set_take_event(gen);
+	printf("take event toggled: %s\n", (gen) ? "ON":"OFF");
+}
+
 
 /* Sets the GUI state for Gmode as described in GMode_CB_toggled
 */
@@ -1520,6 +1532,7 @@ int main(int argc, char *argv[])
 	Sel_Shaper_CB_h = GTK_WIDGET(gtk_builder_get_object(builder, "Sel_Shaper_CB"));
 	Odd_Pulser_CB_h = GTK_WIDGET(gtk_builder_get_object(builder, "Odd_Pulser_CB"));
 	Even_Pulser_CB_h = GTK_WIDGET(gtk_builder_get_object(builder, "Even_Pulser_CB"));
+	Take_Event_CB_h = GTK_WIDGET(gtk_builder_get_object(builder, "Take_Event_CB"));
 
 	Nowlin_Mode_Menu_h = GTK_WIDGET(gtk_builder_get_object(builder, "Nowlin_Mode_Menu"));
 	Nowlin_Delay_Menu_h = GTK_WIDGET(gtk_builder_get_object(builder, "Nowlin_Delay_Menu"));
