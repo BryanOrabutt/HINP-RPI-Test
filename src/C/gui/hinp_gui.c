@@ -198,8 +198,8 @@ void on_Take_Event_CB_toggled()
 	printf("take_event_ch = %p\n", Take_Event_CB_h);
 	char te = 0;
 	te = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(Take_Event_CB_h))) ? 1:0;
-	set_take_event(gen);
-	printf("take event toggled: %s\n", (gen) ? "ON":"OFF");
+	set_take_event(te);
+	printf("take event toggled: %s\n", (te) ? "ON":"OFF");
 }
 
 
@@ -1181,14 +1181,12 @@ void on_FR_Button_clicked()
 	{
 		printf("Asserting Global Force Reset\n");
 		force_reset_high();	
-		set_write();
-		set_data(0);
-		delay_ns(500);
+		delay_ns(500);		
 		strobe_high();
 		delay_ns(500);
-		set_read();
-		delay_ns(500);
 		strobe_low();
+
+		delay_ns(500);
 		force_reset_low();
 	}
 	else
